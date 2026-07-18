@@ -10,6 +10,23 @@ interface MemoriesScreenProps {
 
 export default function MemoriesScreen({ config, onNext }: MemoriesScreenProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((centerY - y) / centerY) * 15; // Max 15 deg tilt
+    const rotateY = ((x - centerX) / centerX) * 15;
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
 
   const handleNext = () => {
     setCurrentIndex(prev => (prev === config.memories.length - 1 ? 0 : prev + 1));
@@ -84,7 +101,14 @@ export default function MemoriesScreen({ config, onNext }: MemoriesScreenProps) 
               initial="initial"
               animate="animate"
               exit="exit"
-              className="absolute inset-0 w-full h-full glass-panel border border-rose-950/35 rounded-3xl overflow-hidden p-4 flex flex-col shadow-2xl glow-box-pink justify-between"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                transformStyle: 'preserve-3d',
+                transition: 'transform 0.1s ease-out'
+              }}
+              className="absolute inset-0 w-full h-full glass-panel border border-rose-950/35 rounded-3xl overflow-hidden p-4 flex flex-col shadow-2xl glow-box-pink justify-between cursor-grab active:cursor-grabbing"
             >
               {/* Photo Area with Polaroid/Museum style frame */}
               <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-950 border border-neutral-900 relative shadow-inner">

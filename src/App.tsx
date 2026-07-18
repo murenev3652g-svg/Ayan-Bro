@@ -13,6 +13,8 @@ import CounterScreen from './components/CounterScreen';
 import MemoriesScreen from './components/MemoriesScreen';
 import LetterScreen from './components/LetterScreen';
 import AdminPanel from './components/AdminPanel';
+import FloatingParticles from './components/FloatingParticles';
+import VirtualPandaPet from './components/VirtualPandaPet';
 
 type ActiveScreen = 'PASSCODE' | 'LOADING' | 'WELCOME' | 'COUNTER' | 'MEMORIES' | 'LETTER';
 
@@ -21,6 +23,11 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('PASSCODE');
   const [musicPlaying, setMusicPlaying] = useState<boolean>(false);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
+
+  // Sync music style configuration
+  useEffect(() => {
+    romanticSynth.setMusicType(config.musicType || 'musicbox');
+  }, [config.musicType]);
 
   // Sync background music state
   useEffect(() => {
@@ -77,6 +84,9 @@ export default function App() {
       
       {/* Dynamic star dust sparkles in background */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-950 via-black to-black z-0" />
+
+      {/* Premium Falling Hearts/Roses particles backdrop */}
+      <FloatingParticles theme={config.floatingTheme || 'hearts'} />
 
       {/* Persistent Controls Overlay (only visible after unlocking) */}
       {activeScreen !== 'PASSCODE' && activeScreen !== 'LOADING' && (
@@ -153,6 +163,15 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Interactive Floating Virtual Pet Panda (unlock dependent) */}
+      {activeScreen !== 'PASSCODE' && activeScreen !== 'LOADING' && (
+        <VirtualPandaPet
+          boyName={config.boyName}
+          girlName={config.girlName}
+          messages={config.pandaMessages || []}
+        />
+      )}
 
       {/* Customize Dialog Modal (Admin Panel) */}
       <AnimatePresence>

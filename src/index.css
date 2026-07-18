@@ -67,3 +67,69 @@
   animation: heartbeat 1.5s infinite ease-in-out;
 }
 
+/* 🐼 Live Panda Animation System */
+@keyframes panda-head-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@keyframes ear-twitch-left {
+  0%, 85%, 100% { transform: rotate(0deg) translateY(0); }
+  88% { transform: rotate(-10deg) translateY(-1px); }
+  92% { transform: rotate(0deg) translateY(0); }
+  96% { transform: rotate(-6deg) translateY(-0.5px); }
+}
+
+@keyframes ear-twitch-right {
+  0%, 82%, 100% { transform: rotate(0deg) translateY(0); }
+  85% { transform: rotate(10deg) translateY(-1px); }
+  89% { transform: rotate(0deg) translateY(0); }
+  93% { transform: rotate(6deg) translateY(-0.5px); }
+}
+
+@keyframes blush-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+
+@keyframes eye-wink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  96%, 98% { transform: scaleY(0.05); }
+}
+
+@keyframes zzz-fade {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.8); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translate(10px, -15px) scale(1.1); }
+}
+
+.animate-panda-bob {
+  animation: panda-head-bob 4s infinite ease-in-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-panda-ear-l {
+  animation: ear-twitch-left 3.5s infinite ease-in-out;
+  transform-box: fill-box;
+  transform-origin: 28px 30px;
+}
+
+.animate-panda-ear-r {
+  animation: ear-twitch-right 3.5s infinite ease-in-out;
+  transform-box: fill-box;
+  transform-origin: 72px 30px;
+}
+
+.animate-panda-blush {
+  animation: blush-pulse 2.5s infinite ease-in-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-panda-eye {
+  animation: eye-wink 4.5s infinite ease-in-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+

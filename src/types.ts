@@ -15,4 +15,10 @@ export interface RelationshipConfig {
   letterText: string;
   memories: Memory[];
   musicEnabled: boolean;
+  musicType?: 'musicbox' | 'lullaby' | 'starlit';
+  floatingTheme?: 'hearts' | 'roses' | 'stars' | 'none';
+  customWishes?: string[];
+  pandaMessages?: string[];
+  customTheme?: 'rose_midnight' | 'pastel_pink' | 'midnight_red' | 'sweet_lavender';
+  adminPasscode?: string;
 }

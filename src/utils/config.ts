@@ -43,6 +43,7 @@ const DEFAULT_CONFIG: RelationshipConfig = {
   girlName: 'Niru',
   startDate: '2026-01-18', // 6 months before 2026-07-18
   passcode: '2026',
+  adminPasscode: '2026',
   letterTitle: 'Happy 6-Month Anniversary, My Love! ❤️',
   letterText: `My dearest Niru,
 
@@ -61,7 +62,28 @@ Happy 6 Months, Niruu. You are my today, my tomorrow, and my forever.
 Always yours,
 Your Ayan ✨`,
   memories: DEFAULT_MEMORIES,
-  musicEnabled: true
+  musicEnabled: true,
+  musicType: 'musicbox',
+  floatingTheme: 'hearts',
+  customTheme: 'rose_midnight',
+  customWishes: [
+    "Niruu, tmi amr jibon er shobcheye sundor upohar! Love you! 💖",
+    "No matter how much we argue, my heart only belongs to you. Forever. 🤝",
+    "Ayan says: 'Niruu is the prettiest girl in the entire world!' 😍",
+    "Tmr sathe katano protiti muhurto amr jibon er shera smriti! 🌸",
+    "I promise to hold your hand tight through every up and down! ⚡",
+    "Happy 6 Months, my cute panda! Let's make it a lifetime! 🐼",
+    "Tmr oi misti hashitai amr din ta valo korar jonno jottheshto! 😊",
+    "Ayan wishes to make Niru the happiest girl ever! 👑"
+  ],
+  pandaMessages: [
+    "Hey Niru! Ayan bollo tmi naki khub cute? Shotti? 🐼",
+    "Ayan amake boleche tmake dusshtumi korte r khub valobashte! 💖",
+    "Niru, did you drink water today? Ayan tmr onk care kore! 🥤",
+    "Ayan is missing you right now! Send him a sweet message! 📲",
+    "Panda says: Ayan and Niru are made for each other! 🌟",
+    "Tmr cute mukhtir dike takale Ayan er shob koshto dure chole jay! 🥰"
+  ]
 };
 
 const STORAGE_KEY = 'relationship_sandbox_config';

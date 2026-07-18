@@ -62,46 +62,55 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             {/* Soft pink outer glow */}
             <div className="absolute inset-2 bg-rose-500/15 rounded-full blur-xl pointer-events-none" />
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_15px_rgba(244,63,94,0.25)]">
-              {/* Ears */}
-              <circle cx="30" cy="30" r="11" fill="#171717" />
-              <circle cx="70" cy="30" r="11" fill="#171717" />
-              <circle cx="30" cy="30" r="6" fill="#0a0a0a" />
-              <circle cx="70" cy="30" r="6" fill="#0a0a0a" />
+              {/* Ears (Interactive animated twitching) */}
+              <g className="animate-panda-ear-l">
+                <circle cx="30" cy="30" r="11" fill="#171717" />
+                <circle cx="30" cy="30" r="6" fill="#0a0a0a" />
+              </g>
+              <g className="animate-panda-ear-r">
+                <circle cx="70" cy="30" r="11" fill="#171717" />
+                <circle cx="70" cy="30" r="6" fill="#0a0a0a" />
+              </g>
 
-              {/* Head */}
-              <circle cx="50" cy="52" r="28" fill="#f5f5f5" />
+              {/* Bobbing Head and Face Group */}
+              <g className="animate-panda-bob">
+                {/* Head Base */}
+                <circle cx="50" cy="52" r="28" fill="#f5f5f5" />
 
-              {/* Eye patches */}
-              <ellipse cx="39" cy="50" rx="9" ry="11" fill="#171717" transform="rotate(-15 39 50)" />
-              <ellipse cx="61" cy="50" rx="9" ry="11" fill="#171717" transform="rotate(15 61 50)" />
+                {/* Eye patches */}
+                <ellipse cx="39" cy="50" rx="9" ry="11" fill="#171717" transform="rotate(-15 39 50)" />
+                <ellipse cx="61" cy="50" rx="9" ry="11" fill="#171717" transform="rotate(15 61 50)" />
 
-              {/* Eyes */}
-              <circle cx="39" cy="48" r="3.5" fill="#ffffff" />
-              <circle cx="61" cy="48" r="3.5" fill="#ffffff" />
-              {/* Eye twinkles */}
-              <circle cx="40" cy="47" r="1.2" fill="#000000" />
-              <circle cx="62" cy="47" r="1.2" fill="#000000" />
-              <circle cx="38" cy="49" r="0.8" fill="#ffffff" />
-              <circle cx="60" cy="49" r="0.8" fill="#ffffff" />
+                {/* Eyes with continuous winks */}
+                <g className="animate-panda-eye">
+                  <circle cx="39" cy="48" r="3.5" fill="#ffffff" />
+                  <circle cx="61" cy="48" r="3.5" fill="#ffffff" />
+                  {/* Eye twinkles */}
+                  <circle cx="40" cy="47" r="1.2" fill="#000000" />
+                  <circle cx="62" cy="47" r="1.2" fill="#000000" />
+                  <circle cx="38" cy="49" r="0.8" fill="#ffffff" />
+                  <circle cx="60" cy="49" r="0.8" fill="#ffffff" />
+                </g>
 
-              {/* Rosy blush cheeks */}
-              <circle cx="28" cy="58" r="4.5" fill="#fb7185" opacity="0.65" />
-              <circle cx="72" cy="58" r="4.5" fill="#fb7185" opacity="0.65" />
+                {/* Rosy blush cheeks */}
+                <circle cx="28" cy="58" r="4.5" fill="#fb7185" className="animate-panda-blush text-rose-400" />
+                <circle cx="72" cy="58" r="4.5" fill="#fb7185" className="animate-panda-blush text-rose-400" />
 
-              {/* Snout and Cute Nose */}
-              <ellipse cx="50" cy="57" rx="6" ry="4" fill="#ffffff" />
-              <polygon points="47,56 53,56 50,59" fill="#171717" />
+                {/* Snout and Cute Nose */}
+                <ellipse cx="50" cy="57" rx="6" ry="4" fill="#ffffff" />
+                <polygon points="47,56 53,56 50,59" fill="#171717" />
 
-              {/* Smile line */}
-              <path d="M48,60 Q50,61 52,60" stroke="#171717" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+                {/* Smile line */}
+                <path d="M48,60 Q50,61 52,60" stroke="#171717" strokeWidth="1.2" fill="none" strokeLinecap="round" />
 
-              {/* Little Red Heart on Forehead or Body */}
-              <path
-                d="M50,71 C49,67 44,67 44,70 C44,72 50,76 50,76 C50,76 56,72 56,70 C56,67 51,67 50,71 Z"
-                fill="#fb7185"
-                className="heart-beat origin-center"
-                style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-              />
+                {/* Little Red Heart on Forehead or Body */}
+                <path
+                  d="M50,71 C49,67 44,67 44,70 C44,72 50,76 50,76 C50,76 56,72 56,70 C56,67 51,67 50,71 Z"
+                  fill="#fb7185"
+                  className="heart-beat origin-center"
+                  style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+                />
+              </g>
             </svg>
           </motion.div>
         </div>

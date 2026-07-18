@@ -315,8 +315,8 @@ export default function LetterScreen({ config, onRestart }: LetterScreenProps) {
                   {config.letterTitle}
                 </h3>
                 
-                {/* Cursive text with typing output */}
-                <p className="font-handwritten text-xl text-neutral-200 leading-relaxed whitespace-pre-wrap select-none min-h-[30vh]">
+                {/* Readable normal font text with typing output */}
+                <p className="font-sans text-sm md:text-base text-neutral-300 leading-relaxed whitespace-pre-wrap select-none min-h-[30vh]">
                   {typedText}
                   {!typewriterComplete && (
                     <span className="inline-block w-1.5 h-4 bg-rose-500 ml-1 animate-pulse" />

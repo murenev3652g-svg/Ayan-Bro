@@ -36,6 +36,7 @@ export default function PasscodeScreen({
   }, [code, error]);
 
   const handleNumberPress = (num: string) => {
+    romanticSynth.playTouchSound();
     if (code.length < 4) {
       const newCode = code + num;
       setCode(newCode);
@@ -62,6 +63,7 @@ export default function PasscodeScreen({
   };
 
   const handleBackspace = () => {
+    romanticSynth.playTouchSound();
     setCode(prev => prev.slice(0, -1));
   };
 

@@ -63,23 +63,30 @@ export default function WelcomeScreen({ config, onStart }: WelcomeScreenProps) {
                 zZ
               </motion.text>
 
-              {/* Ears */}
-              <circle cx="34" cy="40" r="9" fill="#1e1b1c" />
-              <circle cx="66" cy="40" r="9" fill="#1e1b1c" />
+              {/* Ears (Cozy slow sleep wiggles) */}
+              <g className="animate-panda-ear-l">
+                <circle cx="34" cy="40" r="9" fill="#1e1b1c" />
+              </g>
+              <g className="animate-panda-ear-r">
+                <circle cx="66" cy="40" r="9" fill="#1e1b1c" />
+              </g>
 
-              {/* Head */}
-              <ellipse cx="50" cy="55" rx="24" ry="20" fill="#f5f5f5" />
+              {/* Sleepy slow bobbing head */}
+              <g className="animate-panda-bob" style={{ animationDuration: '6s' }}>
+                {/* Head */}
+                <ellipse cx="50" cy="55" rx="24" ry="20" fill="#f5f5f5" />
 
-              {/* Closed Sleeping Eye lines */}
-              <path d="M34,54 Q40,58 44,54" stroke="#262626" strokeWidth="2" fill="none" strokeLinecap="round" />
-              <path d="M56,54 Q60,58 66,54" stroke="#262626" strokeWidth="2" fill="none" strokeLinecap="round" />
+                {/* Closed Sleeping Eye lines */}
+                <path d="M34,54 Q40,58 44,54" stroke="#262626" strokeWidth="2" fill="none" strokeLinecap="round" />
+                <path d="M56,54 Q60,58 66,54" stroke="#262626" strokeWidth="2" fill="none" strokeLinecap="round" />
 
-              {/* Blush cheeks */}
-              <circle cx="32" cy="62" r="4.5" fill="#fb7185" opacity="0.55" />
-              <circle cx="68" cy="62" r="4.5" fill="#fb7185" opacity="0.55" />
+                {/* Blush cheeks */}
+                <circle cx="32" cy="62" r="4.5" fill="#fb7185" className="animate-panda-blush" />
+                <circle cx="68" cy="62" r="4.5" fill="#fb7185" className="animate-panda-blush" />
 
-              {/* Little cute nose */}
-              <ellipse cx="50" cy="59" rx="3.5" ry="2" fill="#262626" />
+                {/* Little cute nose */}
+                <ellipse cx="50" cy="59" rx="3.5" ry="2" fill="#262626" />
+              </g>
 
               {/* Cute heart held in paws or blanket */}
               <rect x="25" y="65" width="50" height="20" rx="6" fill="#1e1b1c" />

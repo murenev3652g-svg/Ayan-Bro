@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Calendar, Heart, Clock, ChevronRight, Milestone } from 'lucide-react';
 import { RelationshipConfig } from '../types';
+import SurpriseKit from './SurpriseKit';
 
 interface CounterScreenProps {
   config: RelationshipConfig;
@@ -241,6 +242,15 @@ export default function CounterScreen({ config, onNext }: CounterScreenProps) {
             );
           })}
         </div>
+      </motion.div>
+
+      {/* Interactive Surprise Kit (Wish Bottle & Love Meter) */}
+      <motion.div variants={itemVariants} className="w-full mb-8">
+        <SurpriseKit
+          boyName={config.boyName}
+          girlName={config.girlName}
+          customWishes={config.customWishes || []}
+        />
       </motion.div>
 
       {/* Next Step Action Button */}
