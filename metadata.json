@@ -1,0 +1,6 @@
+{
+  "name": "Creative Sandbox",
+  "description": "An elegant, interactive playground to build and refine your next idea. Enter a prompt to get started.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
