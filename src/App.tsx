@@ -21,7 +21,7 @@ type ActiveScreen = 'PASSCODE' | 'LOADING' | 'WELCOME' | 'COUNTER' | 'MEMORIES' 
 export default function App() {
   const [config, setConfig] = useState<RelationshipConfig>(getRelationshipConfig());
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('PASSCODE');
-  const [musicPlaying, setMusicPlaying] = useState<boolean>(false);
+  const [musicPlaying, setMusicPlaying] = useState<boolean>(true);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
 
   // Sync music style and custom song configuration
@@ -37,6 +37,26 @@ export default function App() {
     } else {
       romanticSynth.stop();
     }
+  }, [musicPlaying]);
+
+  // Autoplay handler for browser policy unlock
+  useEffect(() => {
+    const handleUnlockAudio = () => {
+      if (musicPlaying) {
+        romanticSynth.start();
+      }
+      // Remove listeners after first interaction
+      document.removeEventListener('click', handleUnlockAudio);
+      document.removeEventListener('touchstart', handleUnlockAudio);
+    };
+
+    document.addEventListener('click', handleUnlockAudio);
+    document.addEventListener('touchstart', handleUnlockAudio);
+
+    return () => {
+      document.removeEventListener('click', handleUnlockAudio);
+      document.removeEventListener('touchstart', handleUnlockAudio);
+    };
   }, [musicPlaying]);
 
   const handleToggleMusic = () => {
