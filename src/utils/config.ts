@@ -89,6 +89,8 @@ Your Ayan ✨`,
 };
 
 const STORAGE_KEY = 'relationship_sandbox_config';
+const BIN_ID = 'eddeaef';
+const CLOUD_API_URL = `https://extendsclass.com/api/json-storage/bin/${BIN_ID}`;
 
 export function getRelationshipConfig(): RelationshipConfig {
   try {
@@ -109,5 +111,41 @@ export function saveRelationshipConfig(config: RelationshipConfig): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   } catch (e) {
     console.error('Failed to save config to localStorage', e);
+  }
+}
+
+export async function fetchRelationshipConfigCloud(): Promise<RelationshipConfig> {
+  try {
+    const res = await fetch(CLOUD_API_URL);
+    if (res.ok) {
+      const data = await res.json();
+      // Write to localStorage to cache it
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      return { ...DEFAULT_CONFIG, ...data };
+    }
+  } catch (e) {
+    console.error('Failed to fetch config from cloud', e);
+  }
+  return getRelationshipConfig(); // fallback to local cache
+}
+
+export async function saveRelationshipConfigCloud(config: RelationshipConfig): Promise<boolean> {
+  try {
+    // Save locally first
+    saveRelationshipConfig(config);
+    
+    // Save to Cloud
+    const res = await fetch(CLOUD_API_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(config),
+    });
+    
+    return res.ok;
+  } catch (e) {
+    console.error('Failed to save config to cloud', e);
+    return false;
   }
 }

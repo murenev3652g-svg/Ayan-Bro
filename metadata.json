@@ -1,6 +1,6 @@
 {
-  "name": "Creative Sandbox",
-  "description": "An elegant, interactive playground to build and refine your next idea. Enter a prompt to get started.",
+  "name": "Ayan Niru Love Portal",
+  "description": "An elegant, interactive love portal and anniversary album for Ayan and Niru, featuring a special lock screen, memories carousel, virtual panda pet, and customizable settings.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

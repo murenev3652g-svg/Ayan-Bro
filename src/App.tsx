@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Settings, Volume2, VolumeX, Heart, Edit2, RotateCcw } from 'lucide-react';
 import { RelationshipConfig } from './types';
-import { getRelationshipConfig, saveRelationshipConfig } from './utils/config';
+import {
+  getRelationshipConfig,
+  saveRelationshipConfig,
+  fetchRelationshipConfigCloud,
+  saveRelationshipConfigCloud
+} from './utils/config';
 import { romanticSynth } from './utils/audio';
 
 // Import subcomponents
@@ -23,6 +28,18 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('PASSCODE');
   const [musicPlaying, setMusicPlaying] = useState<boolean>(true);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
+
+  // Load config from Cloud on startup and poll for updates periodically
+  useEffect(() => {
+    const loadCloudConfig = async () => {
+      const cloudConfig = await fetchRelationshipConfigCloud();
+      setConfig(cloudConfig);
+    };
+    loadCloudConfig();
+
+    const interval = setInterval(loadCloudConfig, 15000); // 15 seconds real-time sync
+    return () => clearInterval(interval);
+  }, []);
 
   // Sync music style and custom song configuration
   useEffect(() => {
@@ -87,10 +104,11 @@ export default function App() {
     setActiveScreen('PASSCODE');
   };
 
-  const handleSaveConfig = (newConfig: RelationshipConfig) => {
+  const handleSaveConfig = async (newConfig: RelationshipConfig) => {
     setConfig(newConfig);
     saveRelationshipConfig(newConfig);
     setIsAdminOpen(false);
+    await saveRelationshipConfigCloud(newConfig);
   };
 
   // Screen transition variants
