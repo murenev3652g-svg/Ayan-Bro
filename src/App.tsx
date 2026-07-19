@@ -28,6 +28,7 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('PASSCODE');
   const [musicPlaying, setMusicPlaying] = useState<boolean>(true);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'saved' | 'failed'>('idle');
   const lastSavedTimeRef = useRef<number>(0);
 
   // Load config from Cloud on startup and poll for updates periodically
@@ -37,12 +38,31 @@ export default function App() {
         // Skip syncing if we recently saved to avoid race conditions overriding the local UI
         return;
       }
-      const cloudConfig = await fetchRelationshipConfigCloud();
-      setConfig(cloudConfig);
+      setSyncStatus('syncing');
+      try {
+        const cloudConfig = await fetchRelationshipConfigCloud();
+        setConfig(cloudConfig);
+        setSyncStatus('saved');
+        setTimeout(() => setSyncStatus('idle'), 3000);
+      } catch (err) {
+        console.error('Initial sync failed:', err);
+        setSyncStatus('failed');
+      }
     };
     loadCloudConfig();
 
-    const interval = setInterval(loadCloudConfig, 15000); // 15 seconds real-time sync
+    const interval = setInterval(async () => {
+      if (Date.now() - lastSavedTimeRef.current < 15000) {
+        // Skip syncing if we recently saved to avoid race conditions overriding the local UI
+        return;
+      }
+      try {
+        const cloudConfig = await fetchRelationshipConfigCloud();
+        setConfig(cloudConfig);
+      } catch (err) {
+        console.error('Periodic sync failed:', err);
+      }
+    }, 15000); // 15 seconds real-time sync
     return () => clearInterval(interval);
   }, []);
 
@@ -114,7 +134,16 @@ export default function App() {
     setConfig(newConfig);
     saveRelationshipConfig(newConfig);
     setIsAdminOpen(false);
-    await saveRelationshipConfigCloud(newConfig);
+    
+    setSyncStatus('syncing');
+    const success = await saveRelationshipConfigCloud(newConfig);
+    if (success) {
+      setSyncStatus('saved');
+      setTimeout(() => setSyncStatus('idle'), 4000);
+    } else {
+      setSyncStatus('failed');
+      alert("❌ Cloud synchronization failed! This is usually due to image sizes being too large or a network error. Try smaller files or direct image links.");
+    }
   };
 
   // Screen transition variants
@@ -135,8 +164,32 @@ export default function App() {
 
       {/* Persistent Controls Overlay (only visible after unlocking) */}
       {activeScreen !== 'PASSCODE' && activeScreen !== 'LOADING' && (
-        <div className="fixed top-6 right-6 flex items-center gap-3 z-30">
+        <div className="fixed top-6 right-6 flex items-center gap-2.5 z-30">
           
+          {/* Cloud Sync Status Indicator */}
+          {syncStatus !== 'idle' && (
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[9px] font-mono uppercase tracking-wider backdrop-blur-md shadow-lg transition-all ${
+              syncStatus === 'syncing' 
+                ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' 
+                : syncStatus === 'saved'
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 animate-pulse'
+                  : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${
+                syncStatus === 'syncing'
+                  ? 'bg-amber-400 animate-pulse'
+                  : syncStatus === 'saved'
+                    ? 'bg-emerald-400'
+                    : 'bg-rose-400'
+              }`} />
+              <span>
+                {syncStatus === 'syncing' && 'Syncing... ☁️'}
+                {syncStatus === 'saved' && 'Synced ✅'}
+                {syncStatus === 'failed' && 'Sync Fail ❌'}
+              </span>
+            </div>
+          )}
+
           {/* Customize Settings Toggle */}
           <button
             onClick={() => setIsAdminOpen(true)}

@@ -1,4 +1,5 @@
 import { RelationshipConfig } from '../types';
+import { compressImage } from './imageCompressor';
 
 const DEFAULT_MEMORIES = [
   {
@@ -129,10 +130,51 @@ export async function fetchRelationshipConfigCloud(): Promise<RelationshipConfig
   return getRelationshipConfig(); // fallback to local cache
 }
 
+export async function compressConfigImages(config: RelationshipConfig): Promise<RelationshipConfig> {
+  const newConfig = { ...config };
+  
+  if (newConfig.boyImageUrl && newConfig.boyImageUrl.startsWith('data:image/')) {
+    try {
+      newConfig.boyImageUrl = await compressImage(newConfig.boyImageUrl, 400, 400, 0.65);
+    } catch (e) {
+      console.error('Failed to compress boy image', e);
+    }
+  }
+
+  if (newConfig.girlImageUrl && newConfig.girlImageUrl.startsWith('data:image/')) {
+    try {
+      newConfig.girlImageUrl = await compressImage(newConfig.girlImageUrl, 400, 400, 0.65);
+    } catch (e) {
+      console.error('Failed to compress girl image', e);
+    }
+  }
+
+  if (newConfig.memories && newConfig.memories.length > 0) {
+    newConfig.memories = await Promise.all(
+      newConfig.memories.map(async (m) => {
+        if (m.imageUrl && m.imageUrl.startsWith('data:image/')) {
+          try {
+            const compressed = await compressImage(m.imageUrl, 800, 600, 0.7);
+            return { ...m, imageUrl: compressed };
+          } catch (e) {
+            console.error('Failed to compress memory image', m.id, e);
+          }
+        }
+        return m;
+      })
+    );
+  }
+
+  return newConfig;
+}
+
 export async function saveRelationshipConfigCloud(config: RelationshipConfig): Promise<boolean> {
   try {
+    // Aggressively compress any oversized local images in the payload first to guarantee minimal bandwidth and payload size
+    const optimizedConfig = await compressConfigImages(config);
+
     // Save locally first
-    saveRelationshipConfig(config);
+    saveRelationshipConfig(optimizedConfig);
     
     // Choose the API URL. If on an external host like Vercel, call the absolute Cloud Run backend proxy.
     let url = '/api/save-config';
@@ -148,7 +190,7 @@ export async function saveRelationshipConfigCloud(config: RelationshipConfig): P
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config),
+      body: JSON.stringify(optimizedConfig),
     });
     
     if (res.ok) {
@@ -162,7 +204,7 @@ export async function saveRelationshipConfigCloud(config: RelationshipConfig): P
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(config),
+        body: JSON.stringify(optimizedConfig),
       });
       return fbRes.ok;
     }

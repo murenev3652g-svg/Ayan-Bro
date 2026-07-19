@@ -35,8 +35,18 @@ export default function ImageUpload({
     setError(null);
 
     try {
-      // Compress the image before saving to base64 - HD Quality parameters (keeps 100% original if size is small)
-      const compressedBase64 = await compressImage(file, 1920, 1920, 0.96);
+      // Compress the image aggressively to keep base64 payloads extremely lightweight (~15KB to 35KB) for reliable cloud syncing
+      let maxW = 800;
+      let maxH = 600;
+      let qual = 0.7;
+
+      if (aspectRatio === 'circle' || aspectRatio === 'square') {
+        maxW = 400;
+        maxH = 400;
+        qual = 0.65;
+      }
+
+      const compressedBase64 = await compressImage(file, maxW, maxH, qual);
       onChange(compressedBase64);
     } catch (err) {
       console.error('Error processing image:', err);
