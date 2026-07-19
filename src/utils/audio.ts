@@ -4,6 +4,8 @@ class RomanticSynth {
   private intervalId: any = null;
   private currentBeat: number = 0;
   private musicType: 'musicbox' | 'lullaby' | 'starlit' = 'musicbox';
+  private customAudio: HTMLAudioElement | null = null;
+  private customMusicUrl: string | null = null;
 
   // Chords for different progression styles
   private chords = {
@@ -33,6 +35,34 @@ class RomanticSynth {
 
   public setMusicType(type: 'musicbox' | 'lullaby' | 'starlit') {
     this.musicType = type || 'musicbox';
+  }
+
+  public setCustomMusic(url: string | null) {
+    if (this.customMusicUrl === url) return;
+    
+    this.customMusicUrl = url;
+    
+    if (this.customAudio) {
+      this.customAudio.pause();
+      this.customAudio = null;
+    }
+    
+    if (url) {
+      try {
+        this.customAudio = new Audio(url);
+        this.customAudio.loop = true;
+        this.customAudio.volume = 0.65; // Sweet default volume
+        
+        // If we were already playing, play the new one immediately
+        if (this.isPlaying) {
+          this.customAudio.play().catch(err => {
+            console.warn("Failed to play custom audio dynamically:", err);
+          });
+        }
+      } catch (err) {
+        console.error("Failed to create Audio element for custom url:", err);
+      }
+    }
   }
 
   private init() {
@@ -80,6 +110,20 @@ class RomanticSynth {
     }
 
     this.isPlaying = true;
+
+    // Play custom uploaded/pasted audio if present
+    if (this.customMusicUrl) {
+      if (!this.customAudio) {
+        this.setCustomMusic(this.customMusicUrl);
+      }
+      if (this.customAudio) {
+        this.customAudio.play().catch(err => {
+          console.warn("Autoplay / interactive play blocked for custom music:", err);
+        });
+      }
+      return;
+    }
+
     this.currentBeat = 0;
 
     // Slightly different tempos depending on music preset
@@ -88,6 +132,9 @@ class RomanticSynth {
 
     const playSequence = () => {
       if (!this.isPlaying || !this.ctx) return;
+
+      // Skip synth sequence if custom audio is active
+      if (this.customMusicUrl) return;
 
       const activeChords = this.chords[this.musicType] || this.chords.musicbox;
       const chordIndex = Math.floor(this.currentBeat / 8) % activeChords.length;
@@ -131,6 +178,9 @@ class RomanticSynth {
     if (this.intervalId) {
       clearTimeout(this.intervalId);
       this.intervalId = null;
+    }
+    if (this.customAudio) {
+      this.customAudio.pause();
     }
   }
 

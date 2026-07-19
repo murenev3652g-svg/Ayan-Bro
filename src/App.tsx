@@ -24,10 +24,11 @@ export default function App() {
   const [musicPlaying, setMusicPlaying] = useState<boolean>(false);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
 
-  // Sync music style configuration
+  // Sync music style and custom song configuration
   useEffect(() => {
+    romanticSynth.setCustomMusic(config.customMusicUrl || null);
     romanticSynth.setMusicType(config.musicType || 'musicbox');
-  }, [config.musicType]);
+  }, [config.musicType, config.customMusicUrl]);
 
   // Sync background music state
   useEffect(() => {

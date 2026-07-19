@@ -35,8 +35,8 @@ export default function ImageUpload({
     setError(null);
 
     try {
-      // Compress the image before saving to base64
-      const compressedBase64 = await compressImage(file, 600, 600, 0.7);
+      // Compress the image before saving to base64 - HD Quality parameters
+      const compressedBase64 = await compressImage(file, 1400, 1400, 0.92);
       onChange(compressedBase64);
     } catch (err) {
       console.error('Error processing image:', err);

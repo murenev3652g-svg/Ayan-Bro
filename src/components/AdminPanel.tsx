@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Settings, Save, X, Plus, Trash, Image, Calendar, User, Key, FileText,
-  Music, Sparkles, HelpCircle, BookOpen, ExternalLink, Flame, MessageCircle
+  Music, Sparkles, HelpCircle, BookOpen, ExternalLink, Flame, MessageCircle, Globe
 } from 'lucide-react';
 import { RelationshipConfig, Memory } from '../types';
 import { romanticSynth } from '../utils/audio';
@@ -28,6 +28,8 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
 
   // Expanded customization options
   const [musicType, setMusicType] = useState<'musicbox' | 'lullaby' | 'starlit'>(config.musicType || 'musicbox');
+  const [customMusicUrl, setCustomMusicUrl] = useState(config.customMusicUrl || '');
+  const [customMusicName, setCustomMusicName] = useState(config.customMusicName || '');
   const [floatingTheme, setFloatingTheme] = useState<'hearts' | 'roses' | 'stars' | 'none'>(config.floatingTheme || 'hearts');
   const [customTheme, setCustomTheme] = useState<'rose_midnight' | 'pastel_pink' | 'midnight_red' | 'sweet_lavender'>(config.customTheme || 'rose_midnight');
 
@@ -96,7 +98,9 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
       floatingTheme,
       customTheme,
       customWishes: parsedWishes.length > 0 ? parsedWishes : config.customWishes,
-      pandaMessages: parsedPanda.length > 0 ? parsedPanda : config.pandaMessages
+      pandaMessages: parsedPanda.length > 0 ? parsedPanda : config.pandaMessages,
+      customMusicUrl,
+      customMusicName
     });
   };
 
@@ -394,6 +398,88 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
                   <option value="stars">Twinkling Stars ✨</option>
                   <option value="none">No Particles 🚫</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Custom Background Music Upload / URL */}
+            <div className="mt-4 border-t border-neutral-800/60 pt-4 space-y-3">
+              <label className="block text-[9px] font-mono uppercase text-neutral-400 flex justify-between">
+                <span>Custom Background Music (গান আপলোড করুন) 🎵</span>
+                <span className="text-[8px] text-rose-500 font-normal">MP3 / WAV/ Device audio</span>
+              </label>
+
+              <div className="bg-black/60 p-3 rounded-xl border border-neutral-900 space-y-3">
+                <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-serif text-rose-300 truncate">
+                      {customMusicName || "No custom song uploaded / কোনো গান যোগ করা নেই"}
+                    </p>
+                    <p className="text-[9px] text-neutral-500 font-mono mt-0.5">
+                      {customMusicUrl ? "Using custom romance song! 💖" : "Using romantic oscillator synthesizer chords"}
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
+                    {/* Hidden input */}
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setCustomMusicName(file.name);
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            if (event.target?.result) {
+                              setCustomMusicUrl(event.target.result as string);
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="hidden"
+                      id="music-upload-input"
+                    />
+                    <label
+                      htmlFor="music-upload-input"
+                      className="flex-1 sm:flex-initial text-center bg-rose-500/10 hover:bg-rose-500/20 active:scale-95 text-rose-400 border border-rose-500/20 rounded-lg px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer transition-all"
+                    >
+                      Upload Audio 📲
+                    </label>
+
+                    {customMusicUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCustomMusicUrl('');
+                          setCustomMusicName('');
+                        }}
+                        className="p-1.5 text-xs text-neutral-500 hover:text-red-400 border border-neutral-800 hover:border-red-500/20 rounded-lg bg-neutral-900/50 cursor-pointer"
+                        title="Remove custom audio"
+                      >
+                        Remove ❌
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={customMusicUrl}
+                    onChange={(e) => {
+                      setCustomMusicUrl(e.target.value);
+                      if (e.target.value) {
+                        setCustomMusicName("Pasted Link / ইন্টারনেট লিঙ্ক");
+                      } else {
+                        setCustomMusicName("");
+                      }
+                    }}
+                    className="w-full bg-black/60 border border-neutral-900 rounded-lg px-2.5 py-1.5 text-[10px] text-rose-200 focus:outline-none focus:border-rose-500/30 font-mono pr-8"
+                    placeholder="Or paste any direct music URL (.mp3 link)"
+                  />
+                  <Globe className="absolute right-2.5 top-2.5 w-3.5 h-3.5 text-neutral-600" />
+                </div>
               </div>
             </div>
           </div>

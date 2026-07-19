@@ -23,4 +23,6 @@ export interface RelationshipConfig {
   adminPasscode?: string;
   girlImageUrl?: string;
   boyImageUrl?: string;
+  customMusicUrl?: string;
+  customMusicName?: string;
 }
