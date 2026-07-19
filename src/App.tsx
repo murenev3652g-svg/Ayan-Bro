@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Settings, Volume2, VolumeX, Heart, Edit2, RotateCcw } from 'lucide-react';
 import { RelationshipConfig } from './types';
@@ -28,10 +28,15 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<ActiveScreen>('PASSCODE');
   const [musicPlaying, setMusicPlaying] = useState<boolean>(true);
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
+  const lastSavedTimeRef = useRef<number>(0);
 
   // Load config from Cloud on startup and poll for updates periodically
   useEffect(() => {
     const loadCloudConfig = async () => {
+      if (Date.now() - lastSavedTimeRef.current < 15000) {
+        // Skip syncing if we recently saved to avoid race conditions overriding the local UI
+        return;
+      }
       const cloudConfig = await fetchRelationshipConfigCloud();
       setConfig(cloudConfig);
     };
@@ -105,6 +110,7 @@ export default function App() {
   };
 
   const handleSaveConfig = async (newConfig: RelationshipConfig) => {
+    lastSavedTimeRef.current = Date.now();
     setConfig(newConfig);
     saveRelationshipConfig(newConfig);
     setIsAdminOpen(false);

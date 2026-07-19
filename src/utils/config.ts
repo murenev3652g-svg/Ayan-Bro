@@ -134,18 +134,40 @@ export async function saveRelationshipConfigCloud(config: RelationshipConfig): P
     // Save locally first
     saveRelationshipConfig(config);
     
-    // Save to Cloud
-    const res = await fetch(CLOUD_API_URL, {
-      method: 'PUT',
+    // Choose the API URL. If on an external host like Vercel, call the absolute Cloud Run backend proxy.
+    let url = '/api/save-config';
+    if (typeof window !== 'undefined' && 
+        !window.location.hostname.includes('run.app') && 
+        !window.location.hostname.includes('localhost') && 
+        !window.location.hostname.includes('127.0.0.1')) {
+      url = 'https://ais-pre-gxepunzvykhhzsr2jv57wa-439291191094.asia-east1.run.app/api/save-config';
+    }
+    
+    const res = await fetch(url, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(config),
     });
     
-    return res.ok;
+    if (res.ok) {
+      return true;
+    }
+
+    // Fallback if the local relative path was used but returned non-ok (e.g. static host 404)
+    if (url !== 'https://ais-pre-gxepunzvykhhzsr2jv57wa-439291191094.asia-east1.run.app/api/save-config') {
+      const fbRes = await fetch('https://ais-pre-gxepunzvykhhzsr2jv57wa-439291191094.asia-east1.run.app/api/save-config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config),
+      });
+      return fbRes.ok;
+    }
   } catch (e) {
-    console.error('Failed to save config to cloud', e);
-    return false;
+    console.error('Failed to save config to cloud via proxy', e);
   }
+  return false;
 }
