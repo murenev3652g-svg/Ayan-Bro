@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lock, HelpCircle, Eye, EyeOff, Heart, Music, Volume2, VolumeX } from 'lucide-react';
+import { Lock, HelpCircle, Eye, EyeOff, Heart, Music, Volume2, VolumeX, Settings, Camera, Check, Globe } from 'lucide-react';
 import { RelationshipConfig } from '../types';
 import { romanticSynth } from '../utils/audio';
+import ImageUpload from './ImageUpload';
 
 interface PasscodeScreenProps {
   config: RelationshipConfig;
   onSuccess: () => void;
   musicPlaying: boolean;
   onToggleMusic: () => void;
+  onOpenAdmin: () => void;
+  onUpdateConfig: (newConfig: RelationshipConfig) => void;
 }
 
 export default function PasscodeScreen({
@@ -16,10 +19,18 @@ export default function PasscodeScreen({
   onSuccess,
   musicPlaying,
   onToggleMusic,
+  onOpenAdmin,
+  onUpdateConfig,
 }: PasscodeScreenProps) {
   const [code, setCode] = useState<string>('');
   const [error, setError] = useState<boolean>(false);
   const [showHint, setShowHint] = useState<boolean>(false);
+  const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
+  const [tempPhotoUrl, setTempPhotoUrl] = useState<string>(config.girlImageUrl || '');
+
+  useEffect(() => {
+    setTempPhotoUrl(config.girlImageUrl || '');
+  }, [config.girlImageUrl]);
 
   // Handle keypresses on physical keyboard
   useEffect(() => {
@@ -92,9 +103,19 @@ export default function PasscodeScreen({
 
       {/* Music and Hint Controls in Header */}
       <div className="absolute top-6 right-6 flex items-center gap-3 z-30">
+        {/* Customize Settings Toggle on Lock Screen */}
+        <button
+          onClick={onOpenAdmin}
+          className="p-3 rounded-full bg-neutral-900/70 border border-neutral-800 text-neutral-300 hover:text-rose-400 hover:border-rose-500/30 transition-all focus:outline-none glow-box-pink cursor-pointer"
+          id="lock-settings-btn"
+          title="Configure Names & Photos"
+        >
+          <Settings className="w-5 h-5" />
+        </button>
+
         <button
           onClick={onToggleMusic}
-          className="p-3 rounded-full bg-neutral-900/70 border border-neutral-800 text-rose-400 hover:text-rose-300 hover:border-rose-500/30 transition-all focus:outline-none glow-box-pink"
+          className="p-3 rounded-full bg-neutral-900/70 border border-neutral-800 text-rose-400 hover:text-rose-300 hover:border-rose-500/30 transition-all focus:outline-none glow-box-pink cursor-pointer"
           id="toggle-music"
           title="Toggle Background Music"
         >
@@ -117,33 +138,58 @@ export default function PasscodeScreen({
           <Heart className="absolute top-4 right-4 w-4 h-4 text-rose-800/60" />
 
           {/* Profile Picture Frame */}
-          <button
-            onClick={() => setShowHint(true)}
-            className="group relative w-24 h-24 rounded-full p-[3px] bg-gradient-to-r from-rose-500/30 via-red-500/40 to-rose-500/30 hover:scale-105 active:scale-95 transition-all focus:outline-none duration-300 mb-6 cursor-pointer"
-            id="avatar-btn"
-          >
-            {/* Pulsing ring */}
-            <div className="absolute inset-0 rounded-full bg-rose-500/20 blur-md group-hover:bg-rose-500/30 transition-all" />
-            <div className="w-full h-full rounded-full overflow-hidden bg-neutral-950 border-2 border-black relative">
-              <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop"
-                alt="Niru avatar"
-                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-rose-950/20 group-hover:bg-transparent transition-all duration-300 flex items-center justify-center">
-                <HelpCircle className="w-6 h-6 text-rose-300 opacity-60 group-hover:opacity-100 transition-opacity" />
+          <div className="relative mb-4 group">
+            <button
+              onClick={() => setShowHint(true)}
+              className="relative w-24 h-24 rounded-full p-[3px] bg-gradient-to-r from-rose-500/30 via-red-500/40 to-rose-500/30 hover:scale-105 active:scale-95 transition-all focus:outline-none duration-300 cursor-pointer"
+              id="avatar-btn"
+            >
+              {/* Pulsing ring */}
+              <div className="absolute inset-0 rounded-full bg-rose-500/20 blur-md group-hover:bg-rose-500/30 transition-all" />
+              <div className="w-full h-full rounded-full overflow-hidden bg-neutral-950 border-2 border-black relative">
+                <img
+                  src={config.girlImageUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop"}
+                  alt={`${config.girlName} avatar`}
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-rose-950/20 group-hover:bg-transparent transition-all duration-300 flex items-center justify-center">
+                  <HelpCircle className="w-6 h-6 text-rose-300 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+
+            {/* Floating Camera icon badge on the bottom-right corner */}
+            <button
+              onClick={() => {
+                romanticSynth.playTouchSound();
+                setShowPhotoModal(true);
+              }}
+              className="absolute bottom-0 right-0 p-1.5 rounded-full bg-rose-600 border border-neutral-950 hover:bg-rose-500 active:scale-90 transition-all shadow-lg text-white cursor-pointer z-20 hover:scale-110"
+              title="Change Profile Photo"
+              id="lock-avatar-change-badge"
+            >
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {/* Locked Status Header */}
           <h1 className="text-xl font-serif tracking-widest text-neutral-200 uppercase mb-1">
             Locked
           </h1>
-          <p className="text-xs text-neutral-500 tracking-wide text-center mb-6">
+          <p className="text-xs text-neutral-500 tracking-wide text-center mb-1">
             Hint: Click on picture to know passkey!
           </p>
+          <button
+            onClick={() => {
+              romanticSynth.playTouchSound();
+              setShowPhotoModal(true);
+            }}
+            className="text-[10px] text-rose-400/80 hover:text-rose-300 hover:underline transition-all tracking-wide font-mono flex items-center gap-1 mb-5 cursor-pointer"
+            id="change-photo-text-btn"
+          >
+            <Camera className="w-3 h-3" /> Change Photo / ছবি পরিবর্তন করুন
+          </button>
 
           {/* Indicator Lights for Passcode */}
           <motion.div
@@ -233,8 +279,8 @@ export default function PasscodeScreen({
             >
               <div className="w-16 h-16 rounded-full overflow-hidden mx-auto border-2 border-rose-500/40 shadow-lg mb-4">
                 <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop"
-                  alt="Niru"
+                  src={config.girlImageUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop"}
+                  alt={config.girlName}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -259,6 +305,132 @@ export default function PasscodeScreen({
               >
                 Unlock Automatically 💖
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {showPhotoModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-40 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 22 }}
+              className="relative w-full max-w-sm glass-panel rounded-3xl p-6 border border-rose-500/20 shadow-2xl overflow-y-auto max-h-[90vh]"
+            >
+              <h3 className="font-serif text-lg text-rose-300 mb-1 text-center">Change Lock Photo 📸</h3>
+              <p className="text-neutral-400 text-[10px] uppercase font-mono tracking-wider text-center mb-5">
+                লক স্ক্রিনের ছবি পরিবর্তন করুন
+              </p>
+
+              {/* Live Image upload/url selector */}
+              <div className="mb-6">
+                <ImageUpload
+                  value={tempPhotoUrl}
+                  onChange={setTempPhotoUrl}
+                  label="Upload Photo or Paste Link / ফটো আপলোড করুন"
+                  aspectRatio="circle"
+                />
+              </div>
+
+              {/* Beautiful Romantic & Cute presets */}
+              <div className="mb-6">
+                <label className="block text-[9px] font-mono uppercase text-neutral-400 mb-2">
+                  Or select a beautiful preset photo / অথবা একটি ছবি বেছে নিন:
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    {
+                      name: 'Sweet Niru',
+                      url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop'
+                    },
+                    {
+                      name: 'Panda Hug',
+                      url: 'https://images.unsplash.com/photo-1501901609772-df0848060b33?q=80&w=400&auto=format&fit=crop'
+                    },
+                    {
+                      name: 'Cute Couple',
+                      url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop'
+                    },
+                    {
+                      name: 'Love Spark',
+                      url: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=400&auto=format&fit=crop'
+                    },
+                    {
+                      name: 'Red Roses',
+                      url: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?q=80&w=400&auto=format&fit=crop'
+                    },
+                    {
+                      name: 'Sweet Hearts',
+                      url: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop'
+                    }
+                  ].map((preset, i) => {
+                    const isSelected = tempPhotoUrl === preset.url;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          romanticSynth.playTouchSound();
+                          setTempPhotoUrl(preset.url);
+                        }}
+                        className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 active:scale-95 cursor-pointer ${
+                          isSelected ? 'border-rose-500 shadow-lg shadow-rose-500/20' : 'border-neutral-800'
+                        }`}
+                      >
+                        <img
+                          src={preset.url}
+                          alt={preset.name}
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-end p-1 justify-center">
+                          <span className="text-[8px] text-white/90 truncate font-sans">{preset.name}</span>
+                        </div>
+                        {isSelected && (
+                          <div className="absolute top-1 right-1 bg-rose-500 rounded-full p-0.5">
+                            <Check className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3 justify-end mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    romanticSynth.playTouchSound();
+                    setShowPhotoModal(false);
+                    setTempPhotoUrl(config.girlImageUrl || '');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-all text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    romanticSynth.playTouchSound();
+                    onUpdateConfig({
+                      ...config,
+                      girlImageUrl: tempPhotoUrl
+                    });
+                    setShowPhotoModal(false);
+                  }}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white font-medium hover:from-rose-500 hover:to-red-500 hover:shadow-lg hover:shadow-rose-500/20 active:scale-95 transition-all text-xs cursor-pointer"
+                >
+                  Save Photo 💖
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

@@ -128,6 +128,8 @@ export default function App() {
                 onSuccess={handlePasscodeSuccess}
                 musicPlaying={musicPlaying}
                 onToggleMusic={handleToggleMusic}
+                onOpenAdmin={() => setIsAdminOpen(true)}
+                onUpdateConfig={handleSaveConfig}
               />
             </motion.div>
           )}

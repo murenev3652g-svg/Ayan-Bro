@@ -83,7 +83,9 @@ Your Ayan ✨`,
     "Ayan is missing you right now! Send him a sweet message! 📲",
     "Panda says: Ayan and Niru are made for each other! 🌟",
     "Tmr cute mukhtir dike takale Ayan er shob koshto dure chole jay! 🥰"
-  ]
+  ],
+  girlImageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop',
+  boyImageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop'
 };
 
 const STORAGE_KEY = 'relationship_sandbox_config';

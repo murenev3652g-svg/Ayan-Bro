@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { RelationshipConfig, Memory } from '../types';
 import { romanticSynth } from '../utils/audio';
+import ImageUpload from './ImageUpload';
 
 interface AdminPanelProps {
   config: RelationshipConfig;
@@ -19,6 +20,8 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
   const [startDate, setStartDate] = useState(config.startDate);
   const [passcode, setPasscode] = useState(config.passcode);
   const [adminPasscode, setAdminPasscode] = useState(config.adminPasscode || config.passcode);
+  const [girlImageUrl, setGirlImageUrl] = useState(config.girlImageUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop');
+  const [boyImageUrl, setBoyImageUrl] = useState(config.boyImageUrl || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop');
   const [letterTitle, setLetterTitle] = useState(config.letterTitle);
   const [letterText, setLetterText] = useState(config.letterText);
   const [memories, setMemories] = useState<Memory[]>([...config.memories]);
@@ -83,6 +86,8 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
       startDate,
       passcode,
       adminPasscode,
+      girlImageUrl,
+      boyImageUrl,
       letterTitle,
       letterText,
       memories,
@@ -334,6 +339,22 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
                   placeholder="e.g. 2026"
                 />
               </div>
+
+              <div className="space-y-4">
+                <ImageUpload
+                  value={girlImageUrl}
+                  onChange={setGirlImageUrl}
+                  label={`Girlfriend Photo (${girlName}'s Pic) 👩`}
+                  aspectRatio="circle"
+                />
+
+                <ImageUpload
+                  value={boyImageUrl}
+                  onChange={setBoyImageUrl}
+                  label={`Boyfriend Photo (${boyName}'s Pic) 👨`}
+                  aspectRatio="circle"
+                />
+              </div>
             </div>
           </div>
 
@@ -496,16 +517,12 @@ export default function AdminPanel({ config, onSave, onClose }: AdminPanelProps)
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[8px] font-mono uppercase text-neutral-500 mb-1">Direct Image URL</label>
-                    <input
-                      type="text"
-                      value={m.imageUrl}
-                      onChange={e => handleUpdateMemory(m.id, 'imageUrl', e.target.value)}
-                      className="w-full bg-neutral-950 border border-neutral-900 rounded-lg px-2.5 py-1 text-xs text-rose-300 font-mono focus:outline-none focus:border-rose-500/30"
-                      placeholder="Paste .jpg/.png link from imgbb.com"
-                    />
-                  </div>
+                  <ImageUpload
+                    value={m.imageUrl}
+                    onChange={val => handleUpdateMemory(m.id, 'imageUrl', val)}
+                    label="Card Photo 📸"
+                    aspectRatio="square"
+                  />
 
                   <div>
                     <label className="block text-[8px] font-mono uppercase text-neutral-500 mb-1">Card Caption Caption</label>

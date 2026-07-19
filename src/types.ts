@@ -21,4 +21,6 @@ export interface RelationshipConfig {
   pandaMessages?: string[];
   customTheme?: 'rose_midnight' | 'pastel_pink' | 'midnight_red' | 'sweet_lavender';
   adminPasscode?: string;
+  girlImageUrl?: string;
+  boyImageUrl?: string;
 }
