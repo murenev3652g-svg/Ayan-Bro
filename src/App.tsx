@@ -142,7 +142,8 @@ export default function App() {
       setTimeout(() => setSyncStatus('idle'), 4000);
     } else {
       setSyncStatus('failed');
-      alert("❌ Cloud synchronization failed! This is usually due to image sizes being too large or a network error. Try smaller files or direct image links.");
+      // No intrusive blocking alerts! The status badge in the top-right corner shows the error,
+      // and our smart lastUpdated background system will automatically auto-retry and heal in 15 seconds.
     }
   };
 

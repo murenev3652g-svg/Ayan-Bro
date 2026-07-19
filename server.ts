@@ -30,11 +30,13 @@ async function startServer() {
 
   // Proxy save endpoint to extendsclass bin
   app.post('/api/save-config', async (req, res) => {
+    console.log('[Proxy Save] Received save request. Body size (chars):', JSON.stringify(req.body).length);
     try {
       const config = req.body;
       const BIN_ID = 'eddeaef';
       const CLOUD_API_URL = `https://extendsclass.com/api/json-storage/bin/${BIN_ID}`;
 
+      console.log('[Proxy Save] PUTing config to ExtendsClass:', CLOUD_API_URL);
       const response = await fetch(CLOUD_API_URL, {
         method: 'PUT',
         headers: {
@@ -43,16 +45,18 @@ async function startServer() {
         body: JSON.stringify(config),
       });
 
+      console.log('[Proxy Save] ExtendsClass response status:', response.status);
       if (response.ok) {
         const responseData = await response.json();
+        console.log('[Proxy Save] ExtendsClass update succeeded:', responseData);
         return res.json({ success: true, data: responseData });
       } else {
         const errText = await response.text();
-        console.error('Failed to update bin on extendsclass:', errText);
-        return res.status(500).json({ success: false, error: 'ExtendsClass response failed' });
+        console.error('[Proxy Save] Failed to update bin on extendsclass:', response.status, errText);
+        return res.status(500).json({ success: false, error: 'ExtendsClass response failed', details: errText });
       }
     } catch (e: any) {
-      console.error('Proxy save config failed:', e);
+      console.error('[Proxy Save] Exception during proxy save:', e);
       return res.status(500).json({ success: false, error: e.message });
     }
   });

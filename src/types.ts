@@ -25,4 +25,5 @@ export interface RelationshipConfig {
   boyImageUrl?: string;
   customMusicUrl?: string;
   customMusicName?: string;
+  lastUpdated?: number;
 }

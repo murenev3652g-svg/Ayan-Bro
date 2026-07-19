@@ -109,7 +109,10 @@ export function getRelationshipConfig(): RelationshipConfig {
 
 export function saveRelationshipConfig(config: RelationshipConfig): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    const configWithTime = { ...config };
+    // Always stamp with current time unless we specifically want to preserve a timestamp
+    configWithTime.lastUpdated = Date.now();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(configWithTime));
   } catch (e) {
     console.error('Failed to save config to localStorage', e);
   }
@@ -119,10 +122,23 @@ export async function fetchRelationshipConfigCloud(): Promise<RelationshipConfig
   try {
     const res = await fetch(CLOUD_API_URL);
     if (res.ok) {
-      const data = await res.json();
+      const cloudData = await res.json();
+      const localConfig = getRelationshipConfig();
+      
+      // Conflict-free sync logic:
+      // If the local storage config is newer than what is in the cloud database, 
+      // we must preserve the user's local edits and trigger an auto-push instead of pulling outdated data.
+      if (localConfig.lastUpdated && cloudData.lastUpdated && localConfig.lastUpdated > cloudData.lastUpdated) {
+        console.log('[Sync] Local edits are newer than cloud config. Preserving local state and auto-syncing in background.');
+        saveRelationshipConfigCloud(localConfig).catch(err => {
+          console.error('[Sync] Background auto-save failed:', err);
+        });
+        return localConfig;
+      }
+      
       // Write to localStorage to cache it
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      return { ...DEFAULT_CONFIG, ...data };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+      return { ...DEFAULT_CONFIG, ...cloudData };
     }
   } catch (e) {
     console.error('Failed to fetch config from cloud', e);
@@ -158,6 +174,7 @@ export async function compressConfigImages(config: RelationshipConfig): Promise<
             return { ...m, imageUrl: compressed };
           } catch (e) {
             console.error('Failed to compress memory image', m.id, e);
+            return m;
           }
         }
         return m;
